@@ -26,23 +26,23 @@ class LitModel(pl.LightningModule):
         predict_y = self(x_data)
         mse = F.mse_loss(predict_y, y_data)
         mae = F.l1_loss(predict_y, y_data)
-        return {'mse': mse, 'mae': mae}
+        return {'mse': mse, 'mae': mae, 'batch_size': len(y_data)}
 
     def training_step(self, batch, batch_idx):
         res = self.compute_loss(batch)
-        self.log('train_loss', res['mse'], on_step=False, on_epoch=True, prog_bar=True)
+        self.log('train_loss', res['mse'], on_step=False, on_epoch=True, prog_bar=True, batch_size=res['batch_size'])
         return {'loss': res['mse']}
 
     def validation_step(self, batch, batch_idx):
         res = self.compute_loss(batch)
-        res = {"val_mse": res['mse'], "val_mae": res['mae']}
-        self.log_dict(res, on_step=False, on_epoch=True, prog_bar=True, sync_dist=self.opt.use_ddp)
+        res = {"val_mse": res['mse'], "val_mae": res['mae'], "batch_size": res['batch_size']}
+        self.log_dict(res, on_step=False, on_epoch=True, prog_bar=True, sync_dist=self.opt.use_ddp, batch_size=res['batch_size'])
         return res
 
     def test_step(self, batch, batch_idx):
         res = self.compute_loss(batch)
-        metrics = {'test_mse': res['mse'], 'test_mae': res['mae']}
-        self.log_dict(metrics, on_epoch=True, on_step=False, sync_dist=self.opt.use_ddp)
+        metrics = {'test_mse': res['mse'], 'test_mae': res['mae'], 'batch_size': res['batch_size']}
+        self.log_dict(metrics, on_epoch=True, on_step=False, sync_dist=self.opt.use_ddp, batch_size=res['batch_size'])
         return metrics
 
     def configure_optimizers(self):

@@ -5,7 +5,7 @@ import numpy as np
 
 class DefaultConfig:
 
-    model = 'DeepCoNN'
+    model = 'DAML'
     dataset = 'Digital_Music_data'
 
     # -------------base config-----------------------#
@@ -31,7 +31,7 @@ class DefaultConfig:
     filters_num = 100
     kernel_size = 3
 
-    num_fea = 1  # id feature, review feature, doc feature
+    num_fea = 2  # id feature, review feature, doc feature
     use_review = True
     use_doc = True
     self_att = False
