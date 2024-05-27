@@ -16,7 +16,7 @@ class MetricsLogger(pl.callbacks.Callback):
         train_loss = trainer.callback_metrics.get('train_loss')
         val_mse = trainer.callback_metrics.get('val_mse')
         val_mae = trainer.callback_metrics.get('val_mae')
-
+        
         print(f'\nEpoch {trainer.current_epoch}:')
         if train_loss is not None:
             print(f'  train_loss = {train_loss:.4f}')
@@ -44,7 +44,7 @@ def run(**kwargs):
     pl.seed_everything(opt.seed)
 
     print(f"Running model: {opt.model}")  # 실행 중인 모델 이름 출력
-    
+
     litModel = LitModel(opt)
 
     train_data = ReviewData(opt.data_root, mode="Train")
@@ -62,9 +62,17 @@ def run(**kwargs):
     
     metrics_logger = MetricsLogger()
     
-    trainer = pl.Trainer(devices=[opt.gpu_id], max_epochs=opt.num_epochs,
-                         accelerator='auto' if opt.use_ddp else None, callbacks=[ckpt, metrics_logger],
-                         enable_progress_bar=True)
+    # Tensor Core 최적화 설정
+    torch.set_float32_matmul_precision('high')
+
+    trainer = pl.Trainer(
+        devices='auto',
+        max_epochs=opt.num_epochs,
+        accelerator='auto',
+        callbacks=[ckpt, metrics_logger],
+        precision='16-mixed',  # Mixed Precision Training 활성화
+        enable_progress_bar=True
+    )
 
     trainer.fit(litModel, train_data_loader, val_data_loader)
 
