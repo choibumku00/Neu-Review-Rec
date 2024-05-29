@@ -108,5 +108,5 @@ class Digital_Music_data_Config(DefaultConfig):
     user_num = 5541 + 2
     item_num = 3568 + 2
 
-    batch_size = 128
+    batch_size = 32
     print_step = 100

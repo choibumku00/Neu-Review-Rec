@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 import time
 import fire
-
+import os
 import torch
 from torch.utils.data import DataLoader
 import pytorch_lightning as pl
@@ -10,6 +10,9 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from dataset import ReviewData
 from LitModel import LitModel
 import config
+
+# TensorFlow oneDNN 설정 변경
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 
 class MetricsLogger(pl.callbacks.Callback):
     def on_epoch_end(self, trainer, pl_module):
