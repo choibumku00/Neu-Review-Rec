@@ -96,17 +96,25 @@ class Digital_Music_data_Config(DefaultConfig):
     vocab_size = 50002
     word_dim = 300
 
-    r_max_len = 202
+    # 最终设定句子最大长度为(取最大值)：156
+    r_max_len = 156  # 수정: 문장의 최대 길이
 
-    u_max_r = 13
-    i_max_r = 24
+    # 设定用户评论个数为5
+    # 设定商品评论数目7
+    u_max_r = 5  # 수정: 사용자 리뷰 개수
+    i_max_r = 7  # 수정: 상품평의 수
 
-    train_data_size = 51764
-    test_data_size = 6471
-    val_data_size = 6471
+    # Train data size: 811461
+    # Val data size: 78331
+    # Test data size: 78330
+    train_data_size = 39228  # 수정: Train data size
+    test_data_size = 3729  # 수정: Test data size
+    val_data_size = 3729  # 수정: Val data size
 
-    user_num = 5541 + 2
-    item_num = 3568 + 2
+    # userNum: 279965
+    # itemNum: 14585
+    user_num = 13130 + 2  # 수정: UserNum
+    item_num = 8600 + 2  # 수정: ItemNum
 
-    batch_size = 32
+    batch_size = 256
     print_step = 100

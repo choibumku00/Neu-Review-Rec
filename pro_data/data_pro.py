@@ -18,15 +18,12 @@ MAX_VOCAB = 50000
 DOC_LEN = 500
 PRE_W2V_BIN_PATH = ""  # the pre-trained word2vec files
 
-
 def now():
     return str(time.strftime('%Y-%m-%d %H:%M:%S'))
-
 
 def get_count(data, id):
     ids = set(data[id].tolist())
     return ids
-
 
 def numerize(data):
     uid = list(map(lambda x: user2id[x], data['user_id']))
@@ -34,7 +31,6 @@ def numerize(data):
     data['user_id'] = uid
     data['item_id'] = iid
     return data
-
 
 def clean_str(string):
     string = re.sub(r"[^A-Za-z0-9]", " ", string)
@@ -54,13 +50,11 @@ def clean_str(string):
     string = re.sub(r"sssss ", " ", string)
     return string.strip().lower()
 
-
 def bulid_vocbulary(xDict):
     rawReviews = []
     for (id, text) in xDict.items():
         rawReviews.append(' '.join(text))
     return rawReviews
-
 
 def build_doc(u_reviews_dict, i_reviews_dict):
     '''
@@ -107,7 +101,6 @@ def build_doc(u_reviews_dict, i_reviews_dict):
 
     return vocab, u_doc, i_doc, u_reviews_dict, i_reviews_dict
 
-
 def countNum(xDict):
     minNum = 100
     maxNum = 0
@@ -143,7 +136,6 @@ def countNum(xDict):
     pReviewLen = x[int(P_REVIEW * xLen) - 1]
 
     return minNum, maxNum, averageNum, maxSent, minSent, pReviewLen, pSentLen
-
 
 if __name__ == '__main__':
 
@@ -205,6 +197,14 @@ if __name__ == '__main__':
     data = pd.DataFrame(data_frame)     # [['user_id', 'item_id', 'ratings', 'reviews']]
     del users_id, items_id, ratings, reviews
 
+    # 사용자 리뷰 수 필터링 추가
+    review_counts = data['user_id'].value_counts()
+    filtered_users = review_counts[review_counts >= 10].index
+    data = data[data['user_id'].isin(filtered_users)]
+
+    # 데이터 샘플링 (1/10)
+    data = data.sample(frac=0.1, random_state=2019)
+
     uidList, iidList = get_count(data, 'user_id'), get_count(data, 'item_id')
     userNum_all = len(uidList)
     itemNum_all = len(iidList)
@@ -255,7 +255,7 @@ if __name__ == '__main__':
     all_index = list(set().union(uid_index, iid_index))
     data_test = data_test.drop(all_index)
 
-    # split validate set aand test set
+    # split validate set and test set
     data_test, data_val = train_test_split(data_test, test_size=0.5, random_state=1234)
     uidList_train, iidList_train = get_count(data_train, 'user_id'), get_count(data_train, 'item_id')
     userNum = len(uidList_train)
